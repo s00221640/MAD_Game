@@ -23,6 +23,7 @@ public class SequenceActivity extends AppCompatActivity {
     private final int[] colors = {Color.RED, Color.BLUE, Color.GREEN, Color.YELLOW};
     private final Handler handler = new Handler();
     private int currentStep = 0;
+    private int totalScore = 0; // Tracks the total number of correct inputs
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,15 +76,16 @@ public class SequenceActivity extends AppCompatActivity {
         userInput.add(color);
 
         if (userInput.get(currentStep).equals(colorSequence.get(currentStep))) {
+            totalScore++; // Increment total score for each correct input
             currentStep++;
             if (currentStep == colorSequence.size()) {
                 Toast.makeText(this, "Correct! Next Round!", Toast.LENGTH_SHORT).show();
-                generateSequence(colorSequence.size() + 2);
+                generateSequence(colorSequence.size() + 1);
                 handler.postDelayed(this::displaySequence, 1000);
             }
         } else {
             Intent intent = new Intent(SequenceActivity.this, GameOverActivity.class);
-            intent.putExtra("FINAL_SCORE", colorSequence.size() - 2);
+            intent.putExtra("FINAL_SCORE", totalScore);
             startActivity(intent);
             finish();
         }
