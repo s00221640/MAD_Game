@@ -2,6 +2,10 @@ package com.example.mad_final_game;
 
 import android.content.Intent;
 import android.graphics.Color;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
@@ -15,7 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-public class SequenceActivity extends AppCompatActivity {
+public class SequenceActivity extends AppCompatActivity implements SensorEventListener {
 
     private LinearLayout sequenceContainer;
     private List<Integer> colorSequence = new ArrayList<>();
@@ -23,7 +27,10 @@ public class SequenceActivity extends AppCompatActivity {
     private final int[] colors = {Color.RED, Color.BLUE, Color.GREEN, Color.YELLOW};
     private final Handler handler = new Handler();
     private int currentStep = 0;
-    private int totalScore = 0; // Tracks the total number of correct inputs
+    private int totalScore = 0;
+
+    private SensorManager sensorManager;
+    private Sensor accelerometer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,6 +51,15 @@ public class SequenceActivity extends AppCompatActivity {
 
         generateSequence(4);
         displaySequence();
+
+        sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
+        accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+
+        if (accelerometer != null) {
+            sensorManager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_UI);
+        } else {
+            Toast.makeText(this, "No accelerometer available", Toast.LENGTH_SHORT).show();
+        }
     }
 
     private void generateSequence(int length) {
@@ -76,7 +92,7 @@ public class SequenceActivity extends AppCompatActivity {
         userInput.add(color);
 
         if (userInput.get(currentStep).equals(colorSequence.get(currentStep))) {
-            totalScore++; // Increment total score for each correct input
+            totalScore++;
             currentStep++;
             if (currentStep == colorSequence.size()) {
                 Toast.makeText(this, "Correct! Next Round!", Toast.LENGTH_SHORT).show();
@@ -88,6 +104,36 @@ public class SequenceActivity extends AppCompatActivity {
             intent.putExtra("FINAL_SCORE", totalScore);
             startActivity(intent);
             finish();
+        }
+    }
+
+    @Override
+    public void onSensorChanged(SensorEvent event) {
+        float x = event.values[0];
+        float y = event.values[1];
+        float z = event.values[2];
+
+        if (x > 5) {
+            Toast.makeText(this, "Tilted Right", Toast.LENGTH_SHORT).show();
+        } else if (x < -5) {
+            Toast.makeText(this, "Tilted Left", Toast.LENGTH_SHORT).show();
+        } else if (y > 5) {
+            Toast.makeText(this, "Tilted Up", Toast.LENGTH_SHORT).show();
+        } else if (y < -5) {
+            Toast.makeText(this, "Tilted Down", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    @Override
+    public void onAccuracyChanged(Sensor sensor, int accuracy) {
+        //Not used
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (sensorManager != null) {
+            sensorManager.unregisterListener(this);
         }
     }
 }

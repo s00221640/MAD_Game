@@ -5,7 +5,8 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:gravity="center"
-    android:padding="16dp">
+    android:padding="16dp"
+    android:background="@android:color/white">
 
     <TextView
         android:id="@+id/high_scores_title"
@@ -14,17 +15,20 @@
         android:text="High Scores"
         android:textSize="32sp"
         android:textStyle="bold"
-        android:layout_marginBottom="16dp" />
+        android:layout_marginBottom="16dp"
+        android:gravity="center" />
 
     <ListView
         android:id="@+id/high_scores_list"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="0dp"
+        android:layout_weight="1" />
 
     <Button
         android:id="@+id/back_to_menu_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Back to Menu"
+        android:backgroundTint="@android:color/holo_blue_light"
         android:layout_marginTop="16dp" />
 </LinearLayout>
