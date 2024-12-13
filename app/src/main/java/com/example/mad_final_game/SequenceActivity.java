@@ -1,5 +1,6 @@
 package com.example.mad_final_game;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
@@ -30,20 +31,17 @@ public class SequenceActivity extends AppCompatActivity {
 
         sequenceContainer = findViewById(R.id.sequence_container);
 
-        //Initialize buttons
         Button buttonRed = findViewById(R.id.button_red);
         Button buttonBlue = findViewById(R.id.button_blue);
         Button buttonGreen = findViewById(R.id.button_green);
         Button buttonYellow = findViewById(R.id.button_yellow);
 
-        //Set up button click listeners
         buttonRed.setOnClickListener(v -> handleUserInput(Color.RED));
         buttonBlue.setOnClickListener(v -> handleUserInput(Color.BLUE));
         buttonGreen.setOnClickListener(v -> handleUserInput(Color.GREEN));
         buttonYellow.setOnClickListener(v -> handleUserInput(Color.YELLOW));
 
-        //Start th game
-        generateSequence(4); //Initial sequence length
+        generateSequence(4);
         displaySequence();
     }
 
@@ -76,19 +74,18 @@ public class SequenceActivity extends AppCompatActivity {
     private void handleUserInput(int color) {
         userInput.add(color);
 
-        //Check if user input matches
         if (userInput.get(currentStep).equals(colorSequence.get(currentStep))) {
             currentStep++;
             if (currentStep == colorSequence.size()) {
-                //User completed the sequence
                 Toast.makeText(this, "Correct! Next Round!", Toast.LENGTH_SHORT).show();
-                generateSequence(colorSequence.size() + 2); //Increase sequence length
-                handler.postDelayed(this::displaySequence, 1000); //Delay before next round
+                generateSequence(colorSequence.size() + 2);
+                handler.postDelayed(this::displaySequence, 1000);
             }
         } else {
-            //Game Over
-            Toast.makeText(this, "Game Over!", Toast.LENGTH_SHORT).show();
-            finish(); //End the activity (you can navigate to a Game Over screen here)
+            Intent intent = new Intent(SequenceActivity.this, GameOverActivity.class);
+            intent.putExtra("FINAL_SCORE", colorSequence.size() - 2);
+            startActivity(intent);
+            finish();
         }
     }
 }
